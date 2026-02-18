@@ -28,8 +28,14 @@ SECRET_KEY = 'django-insecure-4_%q)&anydb!x*(ynuy(ygmhq+87ty-keuuq12d^vsecj708^s
 DEBUG = True
 
 
-# Allow all hosts
-ALLOWED_HOSTS = ['*']
+
+# Allow localhost and codespace URL
+import os
+codespace_name = os.environ.get('CODESPACE_NAME')
+codespace_host = f"{codespace_name}-8000.app.github.dev" if codespace_name else None
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+if codespace_host:
+    ALLOWED_HOSTS.append(codespace_host)
 
 
 # Application definition
@@ -93,10 +99,10 @@ DATABASES = {
         'CLIENT': {
             'host': 'localhost',
             'port': 27017,
-            'username': '',
-            'password': '',
-            'authSource': 'admin',
-            'authMechanism': 'SCRAM-SHA-1',
+            # 'username': '',
+            # 'password': '',
+            # 'authSource': 'admin',
+            # 'authMechanism': 'SCRAM-SHA-1',
         },
     }
 }
@@ -139,8 +145,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True
+if codespace_host:
+    CORS_ALLOWED_ORIGINS = [
+        f"https://{codespace_host}"
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['*']
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
